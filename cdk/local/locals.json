@@ -1,0 +1,17 @@
+{
+  "Parameters": {
+    "LOCAL": "true",
+    "LOG_LEVEL": "debug",
+    "STAGE": "LOCAL",
+    "ALLOWED_ORIGINS": "[\"*\"]",
+    "AURORA_DB_USERNAME": "cute_merchant",
+    "AURORA_DB_PASSWORD": "migration4life",
+    "AURORA_DB_HOST": "local-pg-db",
+    "BUCKET_NAME": "local-s3-bucket",
+    "FALLBACK_TOKEN": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjEifQ.ew0KICAiYXVkIjogWyJ0ZXN0LWF1ZCJdLA0KICAiaXNzIjogImh0dHBzOi8vcWEucmV0YWlsc2VydmljZXMuYXVkaS5kZS9hdXRoc2VydmVyL3YxIiwNCiAgInN1YiI6ICJjOWJkNzZmMS02MWY5LTQ2YjUtOWUxZC1iMjc5M2Y3MzhiYTEiLA0KICAic3lzIjogInRlc3QtYWNjZXNzdG9rZW4tcWEiLA0KICAiZXhwIjogMzI4OTkzNjY1MiwNCiAgImlhdCI6IDE2NDkyMjg1NjYsDQogICJqdGkiOiAiOWVmYzgyN2YtOTFjYS00YWNmLTkyOTQtZTc4YzQ4ZjYwMmExIiwNCiAgInNpZCI6ICI5ZWZjODI3Zi05MWNhLTRhY2YtOTI5NC1lNzhjNDhmNjAyYTEiLA0KICAic2NwIjogImFjcC1kYXNoYm9hcmQiLA0KICAicm9sZXMiOiBbImRldmVsb3BlciIsImltcG9ydHN5c3RlbSIsImF3c2lJRFNTT1JvbGUxIiwiYXdzaUlEU1NPUm9sZTIiXSwNCiAgImdyb3VwcyI6IFsiZGV2ZWxvcGVyIiwiaW1wb3J0c3lzdGVtIiwiYXdzaUlEU1NPUm9sZTEiLCJhd3NpSURTU09Sb2xlMiJdLA0KICAib3JpZ2luYWxJZFAiOiB7DQogIAkic3ViIjogInNldmVyLmNvbGhvbkBhY2Nlc2EuZXUiLA0KICAJImlzc3VlciI6ICJodHRwczovL2dycC1wcmVsaXZlLnZvbGtzd2FnZW5hZy5jb20vaXNhbS9zcHMvZ2xvYmFsYjJ4cGwvc2FtbDIwIiwNCiAgCSJjb250cmFjdF90eXBlIjogIklNUE9SVEVSIiwNCiAgCSJjb250ZXh0IjogIkRFVTE4MUEiLA0KICAJImxvY2FsZSI6ICJkZS1ERSINCiAgfSwNCiAgInZlciI6ICIxLjAuMCINCn0.7TKZMogMIyllJRJtIlsIGKMvq-Zjs-Tfrzmk0uj8fyHB19daLJhXfd4MWKhAbYt5rAOMsqzQ8CkVMKe_k6qeHQ",
+    "AMQP_HOST": "localhost:5672",
+    "AMQP_USER": "guest",
+    "AMQP_PASSWORD": "guest",
+    "AWS_EVENT_BUS_ARN": "arn:aws:events:eu-central-1:343593036049:event-bus/aws.partner/cloudamqp.com/small-cobalt-hippo/common/product-queue-for-merchant-notification-service"
+  }
+}

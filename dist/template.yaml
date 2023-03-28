@@ -1,0 +1,720 @@
+Resources:
+  devtestservicetokenAuthorizerfunctionServiceRoleCA791204:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-tokenAuthorizer-function/ServiceRole/Resource
+  devtestservicetokenAuthorizerfunctionServiceRoleDefaultPolicyDF85CCE7:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTelemetryRecords
+              - xray:PutTraceSegments
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: devtestservicetokenAuthorizerfunctionServiceRoleDefaultPolicyDF85CCE7
+      Roles:
+        - Ref: devtestservicetokenAuthorizerfunctionServiceRoleCA791204
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-tokenAuthorizer-function/ServiceRole/DefaultPolicy/Resource
+  devtestservicetokenAuthorizerfunction01241F8E:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-343593036049-eu-central-1
+        S3Key: 1b360f376ae3625b4e6a0c670ecf36fd95c68881d0c64a4ae3f0d14389f4703b.zip
+      Role:
+        Fn::GetAtt:
+          - devtestservicetokenAuthorizerfunctionServiceRoleCA791204
+          - Arn
+      Environment:
+        Variables:
+          JWKS_URL: ""
+          DEPLOY_TIMESTAMP: "2023-03-28T12:46:02.853Z"
+          STAGE: dev
+          ALLOWED_ORIGINS: '["*"]'
+          LOCAL: "false"
+          FALLBACK_TOKEN: ""
+      FunctionName: dev-test-service-tokenAuthorizer
+      Handler: authorizer-lambda.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 30
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - devtestservicetokenAuthorizerfunctionServiceRoleDefaultPolicyDF85CCE7
+      - devtestservicetokenAuthorizerfunctionServiceRoleCA791204
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-tokenAuthorizer-function/Resource
+      aws:asset:path: /var/nodejs/test/cdk-test/dist/bundle/authorizer
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  devtestservicetokenAuthorizerfunctiondevtestserviceapigwstackdevtestservicetokenauthorizer1230E588PermissionsDAD5FA44:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - devtestservicetokenAuthorizerfunction01241F8E
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:eu-central-1:343593036049:"
+            - Ref: devtestserviceapigwrestapi932792FE
+            - /authorizers/
+            - Ref: devtestservicetokenauthorizer59EBF8D7
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-tokenAuthorizer-function/devtestserviceapigwstackdevtestservicetokenauthorizer1230E588:Permissions
+  devtestservicetokenauthorizer59EBF8D7:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: devtestserviceapigwstackdevtestservicetokenauthorizer1230E588
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      Type: TOKEN
+      AuthorizerResultTtlInSeconds: 600
+      AuthorizerUri:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - ":"
+                    - Fn::GetAtt:
+                        - devtestservicetokenAuthorizerfunction01241F8E
+                        - Arn
+            - ":apigateway:"
+            - Fn::Select:
+                - 3
+                - Fn::Split:
+                    - ":"
+                    - Fn::GetAtt:
+                        - devtestservicetokenAuthorizerfunction01241F8E
+                        - Arn
+            - :lambda:path/2015-03-31/functions/
+            - Fn::GetAtt:
+                - devtestservicetokenAuthorizerfunction01241F8E
+                - Arn
+            - /invocations
+      IdentitySource: method.request.header.Authorization
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-token-authorizer/Resource
+  devtestserviceapigwrestapi932792FE:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Name: dev-test-service-apigw-rest-api
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Resource
+  devtestserviceapigwrestapiDeployment385305DF1815362376c418351c4945ad11b1392b:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      Description: Automatically created by the RestApi construct
+    DependsOn:
+      - devtestserviceapigwrestapiGETE8BDE00F
+      - devtestserviceapigwrestapiusersidGETC98A93B0
+      - devtestserviceapigwrestapiusersidOPTIONS21AFC96F
+      - devtestserviceapigwrestapiusersid97CDFD4E
+      - devtestserviceapigwrestapiusersGETF4D0B3D4
+      - devtestserviceapigwrestapiusersOPTIONSB4E6FA5F
+      - devtestserviceapigwrestapiusersPOSTDB2100B6
+      - devtestserviceapigwrestapiusers9B9AD110
+      - devtestservicetokenauthorizer59EBF8D7
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Deployment/Resource
+  devtestserviceapigwrestapiDeploymentStagev1AFAA81A0:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      DeploymentId:
+        Ref: devtestserviceapigwrestapiDeployment385305DF1815362376c418351c4945ad11b1392b
+      StageName: v1
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/DeploymentStage.v1/Resource
+  devtestserviceapigwrestapiGETE8BDE00F:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Fn::GetAtt:
+          - devtestserviceapigwrestapi932792FE
+          - RootResourceId
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      AuthorizationType: CUSTOM
+      AuthorizerId:
+        Ref: devtestservicetokenauthorizer59EBF8D7
+      Integration:
+        Type: MOCK
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/GET/Resource
+  devtestserviceapigwrestapiusers9B9AD110:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - devtestserviceapigwrestapi932792FE
+          - RootResourceId
+      PathPart: users
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/Resource
+  devtestserviceapigwrestapiusersPOSTApiPermissiondevtestserviceapigwstackdevtestserviceapigwrestapiE67D5054POSTusers39A0FD2A:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicecreateUserfunctionB2645822
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:eu-central-1:343593036049:"
+            - Ref: devtestserviceapigwrestapi932792FE
+            - /
+            - Ref: devtestserviceapigwrestapiDeploymentStagev1AFAA81A0
+            - /POST/users
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/POST/ApiPermission.devtestserviceapigwstackdevtestserviceapigwrestapiE67D5054.POST..users
+  devtestserviceapigwrestapiusersPOSTDB2100B6:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: POST
+      ResourceId:
+        Ref: devtestserviceapigwrestapiusers9B9AD110
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      AuthorizationType: CUSTOM
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - devtestserviceuserconstructdevtestservicecreateUserfunctionB2645822
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/POST/Resource
+  devtestserviceapigwrestapiusersGETApiPermissiondevtestserviceapigwstackdevtestserviceapigwrestapiE67D5054GETusers6E78C0FB:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicegetUsersfunctionBA98F952
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:eu-central-1:343593036049:"
+            - Ref: devtestserviceapigwrestapi932792FE
+            - /
+            - Ref: devtestserviceapigwrestapiDeploymentStagev1AFAA81A0
+            - /GET/users
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/GET/ApiPermission.devtestserviceapigwstackdevtestserviceapigwrestapiE67D5054.GET..users
+  devtestserviceapigwrestapiusersGETF4D0B3D4:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: devtestserviceapigwrestapiusers9B9AD110
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      AuthorizationType: CUSTOM
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - devtestserviceuserconstructdevtestservicegetUsersfunctionBA98F952
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/GET/Resource
+  devtestserviceapigwrestapiusersOPTIONSApiPermissiondevtestserviceapigwstackdevtestserviceapigwrestapiE67D5054OPTIONSusers76CE3958:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionE1337F00
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:eu-central-1:343593036049:"
+            - Ref: devtestserviceapigwrestapi932792FE
+            - /
+            - Ref: devtestserviceapigwrestapiDeploymentStagev1AFAA81A0
+            - /OPTIONS/users
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/OPTIONS/ApiPermission.devtestserviceapigwstackdevtestserviceapigwrestapiE67D5054.OPTIONS..users
+  devtestserviceapigwrestapiusersOPTIONSB4E6FA5F:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: devtestserviceapigwrestapiusers9B9AD110
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      AuthorizationType: CUSTOM
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionE1337F00
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/OPTIONS/Resource
+  devtestserviceapigwrestapiusersid97CDFD4E:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: devtestserviceapigwrestapiusers9B9AD110
+      PathPart: "{id}"
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/{id}/Resource
+  devtestserviceapigwrestapiusersidGETApiPermissiondevtestserviceapigwstackdevtestserviceapigwrestapiE67D5054GETusersid67E283B7:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicegetUserfunction9C5967C4
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:eu-central-1:343593036049:"
+            - Ref: devtestserviceapigwrestapi932792FE
+            - /
+            - Ref: devtestserviceapigwrestapiDeploymentStagev1AFAA81A0
+            - /GET/users/*
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/{id}/GET/ApiPermission.devtestserviceapigwstackdevtestserviceapigwrestapiE67D5054.GET..users.{id}
+  devtestserviceapigwrestapiusersidGETC98A93B0:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: devtestserviceapigwrestapiusersid97CDFD4E
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      AuthorizationType: CUSTOM
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - devtestserviceuserconstructdevtestservicegetUserfunction9C5967C4
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/{id}/GET/Resource
+  devtestserviceapigwrestapiusersidOPTIONSApiPermissiondevtestserviceapigwstackdevtestserviceapigwrestapiE67D5054OPTIONSusersid50EDE9D4:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionE1337F00
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:eu-central-1:343593036049:"
+            - Ref: devtestserviceapigwrestapi932792FE
+            - /
+            - Ref: devtestserviceapigwrestapiDeploymentStagev1AFAA81A0
+            - /OPTIONS/users/*
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/{id}/OPTIONS/ApiPermission.devtestserviceapigwstackdevtestserviceapigwrestapiE67D5054.OPTIONS..users.{id}
+  devtestserviceapigwrestapiusersidOPTIONS21AFC96F:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: devtestserviceapigwrestapiusersid97CDFD4E
+      RestApiId:
+        Ref: devtestserviceapigwrestapi932792FE
+      AuthorizationType: CUSTOM
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionE1337F00
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/Default/users/{id}/OPTIONS/Resource
+  devtestserviceapigwrestapidevtestserviceapigwrestapiplanusage7BEBDC52:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      ApiStages:
+        - ApiId:
+            Ref: devtestserviceapigwrestapi932792FE
+          Stage:
+            Ref: devtestserviceapigwrestapiDeploymentStagev1AFAA81A0
+          Throttle: {}
+      Throttle:
+        BurstLimit: 1000
+        RateLimit: 1000
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-apigw-rest-api/dev-test-service-apigw-rest-api-plan-usage/Resource
+  devtestserviceuserconstructdevtestservicecreateUserfunctionServiceRole9DCA0080:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-createUser-function/ServiceRole/Resource
+  devtestserviceuserconstructdevtestservicecreateUserfunctionServiceRoleDefaultPolicy8FA5F080:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTelemetryRecords
+              - xray:PutTraceSegments
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: devtestserviceuserconstructdevtestservicecreateUserfunctionServiceRoleDefaultPolicy8FA5F080
+      Roles:
+        - Ref: devtestserviceuserconstructdevtestservicecreateUserfunctionServiceRole9DCA0080
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-createUser-function/ServiceRole/DefaultPolicy/Resource
+  devtestserviceuserconstructdevtestservicecreateUserfunctionB2645822:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-343593036049-eu-central-1
+        S3Key: 9d31b6f2f8a6c36fd0f3586c236067972b5f49edc5ff8a138762ff83d50244f4.zip
+      Role:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicecreateUserfunctionServiceRole9DCA0080
+          - Arn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: UserService
+          DEPLOY_TIMESTAMP: "2023-03-28T12:46:02.853Z"
+          STAGE: dev
+          ALLOWED_ORIGINS: '["*"]'
+          LOCAL: "false"
+          FALLBACK_TOKEN: ""
+      FunctionName: dev-test-service-createUser
+      Handler: create-user-lambda.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 30
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - devtestserviceuserconstructdevtestservicecreateUserfunctionServiceRoleDefaultPolicy8FA5F080
+      - devtestserviceuserconstructdevtestservicecreateUserfunctionServiceRole9DCA0080
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-createUser-function/Resource
+      aws:asset:path: /var/nodejs/test/cdk-test/dist/bundle/users
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  devtestserviceuserconstructdevtestservicegetUsersfunctionServiceRoleDDB59C08:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-getUsers-function/ServiceRole/Resource
+  devtestserviceuserconstructdevtestservicegetUsersfunctionServiceRoleDefaultPolicy4BF1E8A5:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTelemetryRecords
+              - xray:PutTraceSegments
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: devtestserviceuserconstructdevtestservicegetUsersfunctionServiceRoleDefaultPolicy4BF1E8A5
+      Roles:
+        - Ref: devtestserviceuserconstructdevtestservicegetUsersfunctionServiceRoleDDB59C08
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-getUsers-function/ServiceRole/DefaultPolicy/Resource
+  devtestserviceuserconstructdevtestservicegetUsersfunctionBA98F952:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-343593036049-eu-central-1
+        S3Key: 15eb71bd5346897a767480d69f98629f337e6bfcf996a0a9d21637e56fc80de5.zip
+      Role:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicegetUsersfunctionServiceRoleDDB59C08
+          - Arn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: UserService
+          DEPLOY_TIMESTAMP: "2023-03-28T12:46:02.853Z"
+          STAGE: dev
+          ALLOWED_ORIGINS: '["*"]'
+          LOCAL: "false"
+          FALLBACK_TOKEN: ""
+      FunctionName: dev-test-service-getUsers
+      Handler: get-users-lambda.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 30
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - devtestserviceuserconstructdevtestservicegetUsersfunctionServiceRoleDefaultPolicy4BF1E8A5
+      - devtestserviceuserconstructdevtestservicegetUsersfunctionServiceRoleDDB59C08
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-getUsers-function/Resource
+      aws:asset:path: /var/nodejs/test/cdk-test/dist/bundle/users
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionServiceRole28C618C8:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-corsHandlerLocalDevelopment-function/ServiceRole/Resource
+  devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionServiceRoleDefaultPolicy214907F4:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTelemetryRecords
+              - xray:PutTraceSegments
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionServiceRoleDefaultPolicy214907F4
+      Roles:
+        - Ref: devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionServiceRole28C618C8
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-corsHandlerLocalDevelopment-function/ServiceRole/DefaultPolicy/Resource
+  devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionE1337F00:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-343593036049-eu-central-1
+        S3Key: cbde4a68b16760176acbe79911625127731ffec05ce0b7367ac5ead4e088a6ff.zip
+      Role:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionServiceRole28C618C8
+          - Arn
+      Environment:
+        Variables:
+          DEPLOY_TIMESTAMP: "2023-03-28T12:46:02.853Z"
+          STAGE: dev
+          ALLOWED_ORIGINS: '["*"]'
+          LOCAL: "false"
+          FALLBACK_TOKEN: ""
+      FunctionName: dev-test-service-corsHandlerLocalDevelopment
+      Handler: cors-lambda.handler
+      MemorySize: 256
+      Runtime: nodejs14.x
+      Timeout: 30
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionServiceRoleDefaultPolicy214907F4
+      - devtestserviceuserconstructdevtestservicecorsHandlerLocalDevelopmentfunctionServiceRole28C618C8
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-corsHandlerLocalDevelopment-function/Resource
+      aws:asset:path: /var/nodejs/test/cdk-test/dist/bundle/core/aws
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  devtestserviceuserconstructdevtestservicegetUserfunctionServiceRole6FCDF703:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-getUser-function/ServiceRole/Resource
+  devtestserviceuserconstructdevtestservicegetUserfunctionServiceRoleDefaultPolicy9F17CE90:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTelemetryRecords
+              - xray:PutTraceSegments
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: devtestserviceuserconstructdevtestservicegetUserfunctionServiceRoleDefaultPolicy9F17CE90
+      Roles:
+        - Ref: devtestserviceuserconstructdevtestservicegetUserfunctionServiceRole6FCDF703
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-getUser-function/ServiceRole/DefaultPolicy/Resource
+  devtestserviceuserconstructdevtestservicegetUserfunction9C5967C4:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-343593036049-eu-central-1
+        S3Key: af4ed5617eccd608906938cb92340d6002a43bb2e8a3019972a995c9b289d370.zip
+      Role:
+        Fn::GetAtt:
+          - devtestserviceuserconstructdevtestservicegetUserfunctionServiceRole6FCDF703
+          - Arn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: UserService
+          DEPLOY_TIMESTAMP: "2023-03-28T12:46:02.853Z"
+          STAGE: dev
+          ALLOWED_ORIGINS: '["*"]'
+          LOCAL: "false"
+          FALLBACK_TOKEN: ""
+      FunctionName: dev-test-service-getUser
+      Handler: get-user-lambda.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 30
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - devtestserviceuserconstructdevtestservicegetUserfunctionServiceRoleDefaultPolicy9F17CE90
+      - devtestserviceuserconstructdevtestservicegetUserfunctionServiceRole6FCDF703
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/dev-test-service-user-construct/dev-test-service-getUser-function/Resource
+      aws:asset:path: /var/nodejs/test/cdk-test/dist/bundle/users
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/01P0U6EMBD8lnsvq2hyxkdO45uRoD5femXFPUpL2NYLEv7dtqDytDM709nODezv4XonL5ypus00nWB6dVK1IqyOk5bdqZYwPXmjHFkjHj7MFpc4dMQc2CxIdjBVVmMU0iytJjUmX0Kz4NujZEbHUMQROBy8atEdJKOQPTXS4UWOML3ZFk3h3acd6BuHGLJhFbIrekqXVviIvbZjh8bF7YaFOk360wKC3/pBYbr4jCGyjuKKftU1ecHvHB6WWqbKf2Se/92pTcwn00TTi3e9d9uQWRhbI5z56ivfQ34H+e7MRNngjaMOoVrmD6pktzGQAQAA
+    Metadata:
+      aws:cdk:path: dev-test-service-apigw-stack/CDKMetadata/Default
+Outputs:
+  devtestserviceapigwrestapiEndpoint4200AA35:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: devtestserviceapigwrestapi932792FE
+          - .execute-api.eu-central-1.
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: devtestserviceapigwrestapiDeploymentStagev1AFAA81A0
+          - /
+Parameters:
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+Rules:
+  CheckBootstrapVersion:
+    Assertions:
+      - Assert:
+          Fn::Not:
+            - Fn::Contains:
+                - - "1"
+                  - "2"
+                  - "3"
+                  - "4"
+                  - "5"
+                - Ref: BootstrapVersion
+        AssertDescription: CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.
+

@@ -1,0 +1,15 @@
+.DS_Store
+*.iml
+.aws-sam/
+.vscode/
+.idea/
+cdk.out/
+.husky/
+
+coverage/
+node_modules/
+dist/
+yarn.lock
+package.json
+package-lock.json
+database/local/data
